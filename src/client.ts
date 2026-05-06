@@ -113,20 +113,17 @@ export class TestmoClient {
     return this.request(`/projects/${projectId}/cases${query}`);
   }
 
-  async getCase(
-    projectId: number,
-    caseId: number
-  ): Promise<{ data: TestmoTestCase }> {
-    return this.request(`/projects/${projectId}/cases/${caseId}`);
+  async getCase(caseId: number): Promise<{ data: TestmoTestCase }> {
+    return this.request(`/cases/${caseId}`);
   }
 
   async createCase(
     projectId: number,
     input: TestmoCreateCaseInput
-  ): Promise<{ data: TestmoTestCase }> {
+  ): Promise<{ data: TestmoTestCase[] }> {
     return this.request(`/projects/${projectId}/cases`, {
       method: "POST",
-      body: JSON.stringify(input),
+      body: JSON.stringify({ cases: [input] }),
     });
   }
 

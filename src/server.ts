@@ -136,12 +136,11 @@ server.registerTool(
   {
     description: "Get details of a specific test case.",
     inputSchema: {
-      project_id: z.number().int().positive().describe("Project ID"),
       case_id: z.number().int().positive().describe("Test case ID"),
     },
   },
-  async ({ project_id, case_id }) => {
-    const result = await client.getCase(project_id, case_id);
+  async ({ case_id }) => {
+    const result = await client.getCase(case_id);
     return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
   }
 );
