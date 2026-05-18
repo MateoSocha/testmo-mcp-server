@@ -6,3 +6,7 @@ updates:
       interval: weekly
     labels:
       - dependencies
+    ignore:
+      # Major version bumps may have breaking changes — upgrade manually.
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
