@@ -96,11 +96,19 @@ describe.skipIf(SKIP)("testmo MCP server — integration", () => {
       expect(data.result.id).toBe(projectId);
     });
 
-    it("returns the authenticated user", async () => {
-      const res = await callTool(client, "get_current_user");
-      expect(res.isError).toBe(false);
-      const user = res.json<{ name: string }>();
-      expect(user.name).toBeTruthy();
+    it("returns the authenticated user with email via get_user", async () => {
+      // get_current_user returns a flat object with id and name but no email.
+      // Fetch the full profile via get_user to also assert email.
+      const currentRes = await callTool(client, "get_current_user");
+      expect(currentRes.isError).toBe(false);
+      const current = currentRes.json<{ id: number; name: string }>();
+      expect(current.name).toBeTruthy();
+
+      const userRes = await callTool(client, "get_user", { id: current.id });
+      expect(userRes.isError).toBe(false);
+      const user = userRes.json<{ result: { email: string; name: string } }>();
+      expect(user.result.email).toBeTruthy();
+      expect(user.result.name).toBe(current.name);
     });
 
     it("lists users", async () => {
