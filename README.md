@@ -108,11 +108,16 @@ Then in Cursor: open **Settings → MCP** and verify the server shows a green st
 ### Test Cases
 | Tool | Description |
 |------|-------------|
-| `list_cases` | List test cases (supports pagination and folder filtering) |
-| `get_case` | Get details of a specific test case |
+| `list_cases` | List test cases (supports pagination and folder filtering); each row is a full case object |
+| `get_case_names` | Lightweight id/name/folder_id listing (no full case detail) |
+| `get_case_result_history` | Get the historical result records for a specific test case |
 | `create_case` | Create a new test case with full field support (see below) |
 | `update_cases` | Update test cases in bulk — same values applied to all specified IDs (see below) |
 | `delete_cases` | Delete test cases in bulk (up to 100) |
+
+> **No `get_case` tool.** The Testmo REST API has no "get one case by ID" endpoint — full case
+> detail is only returned by the case listing endpoint, so use `list_cases` (optionally filtered
+> by `folder_id`/`name`) to fetch a case's full fields.
 
 #### `create_case` fields
 
@@ -156,31 +161,55 @@ All fields (except `ids`) are optional and applied to **all** specified case IDs
 | Tool | Description |
 |------|-------------|
 | `list_attachments` | List attachments for a test case |
+| `create_attachments` | Upload one or more local files as attachments (up to 20) |
+| `create_attachment_single` | Upload a single local file as an attachment |
 | `delete_attachments` | Delete attachments in bulk (up to 100) |
 
 ### Automation Runs
 | Tool | Description |
 |------|-------------|
-| `list_runs` | List automation runs (supports status filter) |
+| `list_runs` | List automation runs (supports status/source/name filters) |
+| `get_automation_run` | Get details of a single automation run |
+| `get_automation_run_tests` | List all tests recorded in an automation run |
 | `create_run` | Create a new automation run |
 | `complete_run` | Mark a run as complete |
 | `create_run_thread` | Create a thread inside a run |
-| `append_to_run` | Append artifacts or links to a run |
+| `append_to_run` | Append artifacts, links, or fields to a run |
+| `append_to_run_thread` | Append artifacts or fields to a specific run thread |
+| `complete_run_thread` | Mark a specific run thread as complete |
 
-### Run Results
+### Automation Cases & Links
 | Tool | Description |
 |------|-------------|
-| `get_run_results` | Get test results for a specific run |
+| `get_automation_cases` | List automation cases (tests discovered from automation runs) |
+| `create_automation_link` | Link one automation case to a repository test case |
+| `create_automation_links_bulk` | Link multiple automation cases to repository test cases (up to 500) |
 
 ### Manual Test Runs
 | Tool | Description |
 |------|-------------|
 | `list_test_runs` | List manual test runs in a project |
+| `create_test_run` | Create a new manual test run |
+| `get_test_run` | Get details of a single manual test run |
+| `update_test_run` | Update a manual test run |
+| `delete_test_run` | Delete a manual test run |
+
+### Run Results *(manual test runs)*
+| Tool | Description |
+|------|-------------|
+| `get_run_results` | Get test results for a manual test run |
+| `create_run_result` | Record a result for a single test within a run |
+| `create_run_results_bulk` | Record results for multiple tests at once (up to 100) |
+| `update_run_result` | Update an existing test result |
 
 ### Sessions
 | Tool | Description |
 |------|-------------|
 | `list_sessions` | List exploratory test sessions in a project |
+| `get_session` | Get details of a single session |
+| `create_session` | Create a new exploratory test session |
+| `update_session` | Update a session |
+| `delete_session` | Delete a session |
 
 ### Automation Sources
 | Tool | Description |
@@ -193,6 +222,32 @@ All fields (except `ids`) are optional and applied to **all** specified case IDs
 |------|-------------|
 | `list_milestones` | List milestones in a project |
 | `get_milestone` | Get details of a specific milestone |
+| `create_milestone` | Create a new milestone |
+| `update_milestone` | Update a milestone |
+| `delete_milestone` | Delete a milestone |
+| `get_milestone_types` | List the milestone types available for a project |
+
+### Folders (single lookup)
+| Tool | Description |
+|------|-------------|
+| `get_folder` | Get details of a single repository folder by ID |
+
+### Project Reference Data
+| Tool | Description |
+|------|-------------|
+| `get_project_configs` | List configurations (e.g. environments/browsers) |
+| `get_fields` | List custom fields, optionally filtered by entity type |
+| `get_project_repos` | List the test case repositories for a project |
+| `get_project_states` | List workflow states (e.g. draft/active/deprecated) |
+| `get_project_statuses` | List test result statuses (e.g. passed/failed/blocked) |
+| `get_project_tags` | List all tags used in a project, with usage counts |
+| `get_project_templates` | List the test case templates defined for a project |
+| `get_project_users` | List the users who are members of a project |
+
+### Issues
+| Tool | Description |
+|------|-------------|
+| `get_issue_connections` | List configured issue-tracker connections (e.g. linked Jira projects) |
 
 ### Users
 | Tool | Description |
@@ -212,6 +267,12 @@ All fields (except `ids`) are optional and applied to **all** specified case IDs
 |------|-------------|
 | `list_roles` | List all user roles |
 | `get_role` | Get details of a specific role |
+
+### Pagination
+
+Most `list_*` tools accept `page` and `per_page` (not `limit`) — these match the Testmo REST
+API's actual query parameter names and response envelope (`page`, `prev_page`, `next_page`,
+`last_page`, `per_page`, `total`).
 
 ## Example prompts
 
@@ -238,7 +299,7 @@ How many test cases are in project 3? Break the count down by folder.
 Show me the 10 most recently updated test cases in project 3.
 ```
 ```
-Get the full details of test case 1234, including all steps and custom fields.
+Find test case 1234 in project 3 (list its folder and show all steps and custom fields).
 ```
 ```
 Create a test case in project 3 called "Verify checkout with a promo code" with:
