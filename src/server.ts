@@ -234,7 +234,17 @@ server.registerTool(
   },
   withErrorRecovery(
     "list_cases",
-    async ({ project_id, folder_id, state_id, status_id, name, tags, recursive, page, per_page }) => {
+    async ({
+      project_id,
+      folder_id,
+      state_id,
+      status_id,
+      name,
+      tags,
+      recursive,
+      page,
+      per_page,
+    }) => {
       const result = await client.listCases(project_id, {
         page,
         per_page,
@@ -258,7 +268,13 @@ server.registerTool(
     annotations: { readOnlyHint: true },
     inputSchema: {
       project_id: z.number().int().positive().describe("Project ID"),
-      per_page: z.number().int().min(100).max(1000).optional().describe("Results per page (100-1000)"),
+      per_page: z
+        .number()
+        .int()
+        .min(100)
+        .max(1000)
+        .optional()
+        .describe("Results per page (100-1000)"),
     },
   },
   withErrorRecovery("get_case_names", async ({ project_id, per_page }) => {
@@ -304,7 +320,10 @@ server.registerTool(
         .describe("Automation case IDs to link"),
       preconditions: z.string().optional().describe("Preconditions (plain field, per API spec)"),
       steps: z.string().optional().describe("Steps as plain text (plain field, per API spec)"),
-      expected_result: z.string().optional().describe("Expected result (plain field, per API spec)"),
+      expected_result: z
+        .string()
+        .optional()
+        .describe("Expected result (plain field, per API spec)"),
       custom_priority: z
         .number()
         .int()
@@ -526,13 +545,22 @@ server.registerTool(
       run_id: z.number().int().positive().describe("Automation run ID"),
       thread_id: z.number().int().positive().optional().describe("Filter by thread ID"),
       status_id: z.string().optional().describe("Filter by status ID"),
-      per_page: z.number().int().min(100).max(1000).optional().describe("Results per page (100-1000)"),
+      per_page: z
+        .number()
+        .int()
+        .min(100)
+        .max(1000)
+        .optional()
+        .describe("Results per page (100-1000)"),
     },
   },
-  withErrorRecovery("get_automation_run_tests", async ({ run_id, thread_id, status_id, per_page }) => {
-    const result = await client.getAutomationRunTests(run_id, { per_page, thread_id, status_id });
-    return json(result);
-  })
+  withErrorRecovery(
+    "get_automation_run_tests",
+    async ({ run_id, thread_id, status_id, per_page }) => {
+      const result = await client.getAutomationRunTests(run_id, { per_page, thread_id, status_id });
+      return json(result);
+    }
+  )
 );
 
 server.registerTool(
@@ -581,7 +609,12 @@ server.registerTool(
     description: "Create a thread inside an automation run.",
     inputSchema: {
       run_id: z.number().int().positive().describe("Automation run ID"),
-      elapsed_observed: z.number().int().nonnegative().optional().describe("Observed elapsed time (ms)"),
+      elapsed_observed: z
+        .number()
+        .int()
+        .nonnegative()
+        .optional()
+        .describe("Observed elapsed time (ms)"),
     },
   },
   withErrorRecovery("create_run_thread", async ({ run_id, elapsed_observed }) => {
@@ -617,7 +650,12 @@ server.registerTool(
       thread_id: z.number().int().positive().describe("Automation run thread ID"),
       artifacts: z.array(artifactSchema).optional().describe("Artifacts to append"),
       fields: z.array(fieldValueSchema).optional().describe("Custom fields to append"),
-      elapsed_observed: z.number().int().nonnegative().optional().describe("Observed elapsed time (ms)"),
+      elapsed_observed: z
+        .number()
+        .int()
+        .nonnegative()
+        .optional()
+        .describe("Observed elapsed time (ms)"),
     },
   },
   withErrorRecovery(
@@ -636,7 +674,12 @@ server.registerTool(
     description: "Mark a specific automation run thread as complete.",
     inputSchema: {
       thread_id: z.number().int().positive().describe("Automation run thread ID to complete"),
-      elapsed_observed: z.number().int().nonnegative().optional().describe("Observed elapsed time (ms)"),
+      elapsed_observed: z
+        .number()
+        .int()
+        .nonnegative()
+        .optional()
+        .describe("Observed elapsed time (ms)"),
     },
   },
   withErrorRecovery("complete_run_thread", async ({ thread_id, elapsed_observed }) => {
@@ -683,7 +726,10 @@ server.registerTool(
       await client.createAutomationLink(project_id, case_id, automation_case_id);
       return {
         content: [
-          { type: "text", text: `Linked automation case ${automation_case_id} to case ${case_id}.` },
+          {
+            type: "text",
+            text: `Linked automation case ${automation_case_id} to case ${case_id}.`,
+          },
         ],
       };
     }
@@ -834,7 +880,11 @@ server.registerTool(
   withErrorRecovery(
     "get_run_results",
     async ({ run_id, status_id, assignee_id, get_latest_result }) => {
-      const result = await client.getRunResults(run_id, { status_id, assignee_id, get_latest_result });
+      const result = await client.getRunResults(run_id, {
+        status_id,
+        assignee_id,
+        get_latest_result,
+      });
       return json(result);
     }
   )
@@ -864,7 +914,8 @@ server.registerTool(
   "create_run_results_bulk",
   {
     title: "Create Run Results (Bulk)",
-    description: "Record test results for multiple tests within a manual test run at once (up to 100).",
+    description:
+      "Record test results for multiple tests within a manual test run at once (up to 100).",
     inputSchema: {
       run_id: z.number().int().positive().describe("Test run ID"),
       results: z
@@ -1233,7 +1284,8 @@ server.registerTool(
   "get_project_statuses",
   {
     title: "Get Project Statuses",
-    description: "List the test result statuses (e.g. passed/failed/blocked) defined for a project.",
+    description:
+      "List the test result statuses (e.g. passed/failed/blocked) defined for a project.",
     annotations: { readOnlyHint: true },
     inputSchema: { project_id: z.number().int().positive().describe("Project ID") },
   },

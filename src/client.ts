@@ -276,7 +276,13 @@ export class TestmoClient {
 
   async listRuns(
     projectId: number,
-    params?: { page?: number; per_page?: number; status?: number; source_id?: number; name?: string }
+    params?: {
+      page?: number;
+      per_page?: number;
+      status?: number;
+      source_id?: number;
+      name?: string;
+    }
   ): Promise<TestmoPaginatedResponse<TestmoAutomationRun>> {
     const query = this.buildQuery({
       page: params?.page,
@@ -294,7 +300,13 @@ export class TestmoClient {
 
   async createRun(
     projectId: number,
-    input: { name: string; source: string; milestone_id?: number; config_id?: number; tags?: string[] }
+    input: {
+      name: string;
+      source: string;
+      milestone_id?: number;
+      config_id?: number;
+      tags?: string[];
+    }
   ): Promise<{ id: number }> {
     return this.request(`/projects/${projectId}/automation/runs`, {
       method: "POST",
@@ -321,7 +333,10 @@ export class TestmoClient {
     return this.request(`/automation/runs/${runId}/tests${query}`);
   }
 
-  async createRunThread(runId: number, input: { elapsed_observed?: number }): Promise<{ id: number }> {
+  async createRunThread(
+    runId: number,
+    input: { elapsed_observed?: number }
+  ): Promise<{ id: number }> {
     return this.request(`/automation/runs/${runId}/threads`, {
       method: "POST",
       body: JSON.stringify(input),
@@ -331,7 +346,13 @@ export class TestmoClient {
   async appendToRun(
     runId: number,
     input: {
-      artifacts?: Array<{ name: string; url: string; note?: string; mime_type?: string; size?: number }>;
+      artifacts?: Array<{
+        name: string;
+        url: string;
+        note?: string;
+        mime_type?: string;
+        size?: number;
+      }>;
       links?: Array<{ name: string; url: string; note?: string }>;
       fields?: Array<{ type: string; name: string; value?: unknown }>;
     }
@@ -345,7 +366,13 @@ export class TestmoClient {
   async appendToRunThread(
     threadId: number,
     input: {
-      artifacts?: Array<{ name: string; url: string; note?: string; mime_type?: string; size?: number }>;
+      artifacts?: Array<{
+        name: string;
+        url: string;
+        note?: string;
+        mime_type?: string;
+        size?: number;
+      }>;
       fields?: Array<{ type: string; name: string; value?: unknown }>;
       elapsed_observed?: number;
     }
@@ -356,7 +383,10 @@ export class TestmoClient {
     });
   }
 
-  async completeRunThread(threadId: number, measureElapsed?: { elapsed_observed?: number }): Promise<void> {
+  async completeRunThread(
+    threadId: number,
+    measureElapsed?: { elapsed_observed?: number }
+  ): Promise<void> {
     await this.request(`/automation/runs/threads/${threadId}/complete`, {
       method: "POST",
       body: JSON.stringify(measureElapsed ?? {}),
@@ -402,7 +432,13 @@ export class TestmoClient {
 
   async listTestRuns(
     projectId: number,
-    params?: { page?: number; per_page?: number; is_closed?: boolean; milestone_id?: number; name?: string }
+    params?: {
+      page?: number;
+      per_page?: number;
+      is_closed?: boolean;
+      milestone_id?: number;
+      name?: string;
+    }
   ): Promise<TestmoPaginatedResponse<TestmoTestRun>> {
     const query = this.buildQuery({
       page: params?.page,
@@ -438,7 +474,13 @@ export class TestmoClient {
 
   async updateTestRun(
     runId: number,
-    input: { name?: string; milestone_id?: number; state_id?: number; is_closed?: boolean; config_id?: number }
+    input: {
+      name?: string;
+      milestone_id?: number;
+      state_id?: number;
+      is_closed?: boolean;
+      config_id?: number;
+    }
   ): Promise<{ result: TestmoTestRun }> {
     return this.request(`/runs/${runId}`, {
       method: "PATCH",
@@ -506,7 +548,13 @@ export class TestmoClient {
 
   async listSessions(
     projectId: number,
-    params?: { page?: number; per_page?: number; is_closed?: boolean; assignee_id?: number; name?: string }
+    params?: {
+      page?: number;
+      per_page?: number;
+      is_closed?: boolean;
+      assignee_id?: number;
+      name?: string;
+    }
   ): Promise<TestmoPaginatedResponse<TestmoSession>> {
     const query = this.buildQuery({
       page: params?.page,
@@ -581,7 +629,13 @@ export class TestmoClient {
 
   async listMilestones(
     projectId: number,
-    params?: { page?: number; per_page?: number; is_completed?: boolean; parent_id?: number; name?: string }
+    params?: {
+      page?: number;
+      per_page?: number;
+      is_completed?: boolean;
+      parent_id?: number;
+      name?: string;
+    }
   ): Promise<TestmoPaginatedResponse<TestmoMilestone>> {
     const query = this.buildQuery({
       page: params?.page,
@@ -674,7 +728,9 @@ export class TestmoClient {
     return this.request(`/projects/${projectId}/templates`);
   }
 
-  async getProjectUsers(projectId: number): Promise<TestmoPaginatedResponse<{ id: number; name: string }>> {
+  async getProjectUsers(
+    projectId: number
+  ): Promise<TestmoPaginatedResponse<{ id: number; name: string }>> {
     return this.request(`/projects/${projectId}/users`);
   }
 
