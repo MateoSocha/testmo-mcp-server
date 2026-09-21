@@ -1,6 +1,6 @@
 {
   "name": "testmo-mcp-server",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "type": "module",
   "description": "Model Context Protocol (MCP) server for the Testmo REST API — projects, test cases, folders, automation runs, milestones, users and more.",
   "main": "dist/server.js",
@@ -8,6 +8,7 @@
     "testmo-mcp-server": "dist/server.js"
   },
   "scripts": {
+    "prepare": "tsc",
     "build": "tsc",
     "dev": "tsc --watch",
     "start": "node dist/server.js",

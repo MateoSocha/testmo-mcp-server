@@ -112,7 +112,7 @@ describe.skipIf(SKIP)("testmo MCP server — integration", () => {
     });
 
     it("lists users", async () => {
-      const res = await callTool(client, "list_users", { limit: 5 });
+      const res = await callTool(client, "list_users", { per_page: 5 });
       expect(res.isError).toBe(false);
       const data = res.json<ListResponse<unknown>>();
       expect(Array.isArray(data.result)).toBe(true);
@@ -124,7 +124,22 @@ describe.skipIf(SKIP)("testmo MCP server — integration", () => {
     });
 
     it("lists test cases", async () => {
-      const res = await callTool(client, "list_cases", { project_id: projectId, limit: 5 });
+      const res = await callTool(client, "list_cases", { project_id: projectId, per_page: 5 });
+      expect(res.isError).toBe(false);
+    });
+
+    it("lists case names", async () => {
+      const res = await callTool(client, "get_case_names", { project_id: projectId });
+      expect(res.isError).toBe(false);
+    });
+
+    it("gets project statuses", async () => {
+      const res = await callTool(client, "get_project_statuses", { project_id: projectId });
+      expect(res.isError).toBe(false);
+    });
+
+    it("gets project states", async () => {
+      const res = await callTool(client, "get_project_states", { project_id: projectId });
       expect(res.isError).toBe(false);
     });
 
@@ -150,8 +165,8 @@ describe.skipIf(SKIP)("testmo MCP server — integration", () => {
       expect(res.text).toMatch(/\b(404|not found)\b/i);
     });
 
-    it("returns isError for a non-existent test case (404)", async () => {
-      const res = await callTool(client, "get_case", { case_id: 999_999_999 });
+    it("returns isError for a non-existent folder (404)", async () => {
+      const res = await callTool(client, "get_folder", { folder_id: 999_999_999 });
       expect(res.isError).toBe(true);
     });
 
@@ -190,6 +205,27 @@ describe.skipIf(SKIP)("testmo MCP server — integration", () => {
       const res = await callTool(client, "delete_folders", {
         project_id: projectId,
         folder_ids: ids,
+      });
+      expect(res.isError).toBe(true);
+    });
+
+    it("rejects create_attachments with more than 20 file paths", async () => {
+      const paths = Array.from({ length: 21 }, (_, i) => `/tmp/file${i}.txt`);
+      const res = await callTool(client, "create_attachments", {
+        case_id: 1,
+        file_paths: paths,
+      });
+      expect(res.isError).toBe(true);
+    });
+
+    it("rejects create_automation_links_bulk with more than 500 links", async () => {
+      const links = Array.from({ length: 501 }, (_, i) => ({
+        case_id: i + 1,
+        automation_case_id: i + 1,
+      }));
+      const res = await callTool(client, "create_automation_links_bulk", {
+        project_id: projectId,
+        links,
       });
       expect(res.isError).toBe(true);
     });
