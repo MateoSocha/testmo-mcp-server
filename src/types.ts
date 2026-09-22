@@ -137,6 +137,7 @@ export interface TestmoTestRun {
   state_id?: number;
   is_started?: boolean;
   is_closed?: boolean;
+  case_ids?: number[];
   tags?: string[];
   created_at?: string;
   [key: string]: unknown;
