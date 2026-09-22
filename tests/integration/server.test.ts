@@ -90,7 +90,7 @@ describe.skipIf(SKIP)("testmo MCP server — integration", () => {
     });
 
     it("gets a project by ID", async () => {
-      const res = await callTool(client, "get_project", { id: projectId });
+      const res = await callTool(client, "get_project", { project_id: projectId });
       expect(res.isError).toBe(false);
       const data = res.json<{ result: { id: number } }>();
       expect(data.result.id).toBe(projectId);
@@ -112,7 +112,7 @@ describe.skipIf(SKIP)("testmo MCP server — integration", () => {
     });
 
     it("lists users", async () => {
-      const res = await callTool(client, "list_users", { per_page: 5 });
+      const res = await callTool(client, "list_users", { per_page: 100 });
       expect(res.isError).toBe(false);
       const data = res.json<ListResponse<unknown>>();
       expect(Array.isArray(data.result)).toBe(true);
@@ -124,7 +124,7 @@ describe.skipIf(SKIP)("testmo MCP server — integration", () => {
     });
 
     it("lists test cases", async () => {
-      const res = await callTool(client, "list_cases", { project_id: projectId, per_page: 5 });
+      const res = await callTool(client, "list_cases", { project_id: projectId, per_page: 100 });
       expect(res.isError).toBe(false);
     });
 
@@ -160,7 +160,7 @@ describe.skipIf(SKIP)("testmo MCP server — integration", () => {
 
   describe("error handling", () => {
     it("returns isError for a non-existent project (404)", async () => {
-      const res = await callTool(client, "get_project", { id: 999_999_999 });
+      const res = await callTool(client, "get_project", { project_id: 999_999_999 });
       expect(res.isError).toBe(true);
       expect(res.text).toMatch(/\b(404|not found)\b/i);
     });
@@ -171,7 +171,7 @@ describe.skipIf(SKIP)("testmo MCP server — integration", () => {
     });
 
     it("server stays alive after an error — next call still works", async () => {
-      await callTool(client, "get_project", { id: 999_999_999 });
+      await callTool(client, "get_project", { project_id: 999_999_999 });
       const res = await callTool(client, "list_projects");
       expect(res.isError).toBe(false);
     });

@@ -45,7 +45,9 @@ function json(result: unknown): ToolResult {
 // per-operation in the spec.
 const paginationSchema = {
   page: z.number().int().positive().optional().describe("Page number"),
-  per_page: z.number().int().positive().max(1000).optional().describe("Results per page"),
+  // Testmo rejects per_page below 100 with a 422 across every list endpoint tested
+  // (confirmed empirically — not consistently documented in the OpenAPI spec).
+  per_page: z.number().int().min(100).max(1000).optional().describe("Results per page (100-1000)"),
 };
 
 const artifactSchema = z.object({
