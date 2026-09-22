@@ -92,10 +92,10 @@ server.registerTool(
     title: "Get Project",
     description: "Get details of a Testmo project by ID.",
     annotations: { readOnlyHint: true },
-    inputSchema: { id: z.number().int().positive().describe("Project ID") },
+    inputSchema: { project_id: z.number().int().positive().describe("Project ID") },
   },
-  withErrorRecovery("get_project", async ({ id }) => {
-    const result = await client.getProject(id);
+  withErrorRecovery("get_project", async ({ project_id }) => {
+    const result = await client.getProject(project_id);
     return json(result);
   })
 );
@@ -832,7 +832,8 @@ server.registerTool(
   "update_test_run",
   {
     title: "Update Test Run",
-    description: "Update a manual test run.",
+    description:
+      "Update a manual test run. Current case membership is preserved automatically unless case_ids is passed.",
     inputSchema: {
       run_id: z.number().int().positive().describe("Test run ID"),
       name: z.string().min(1).optional().describe("New name"),
@@ -840,6 +841,14 @@ server.registerTool(
       state_id: z.number().int().positive().optional().describe("New state ID"),
       is_closed: z.boolean().optional().describe("Close or reopen the run"),
       config_id: z.number().int().positive().optional().describe("New configuration ID"),
+      case_ids: z
+        .array(z.number().int().positive())
+        .optional()
+        .describe(
+          "Case IDs to include in the run. Testmo's API replaces case membership on every " +
+            "update — omit this to keep the run's current cases unchanged (fetched and " +
+            "resent automatically); pass it explicitly to change membership."
+        ),
     },
   },
   withErrorRecovery("update_test_run", async ({ run_id, ...fields }) => {
@@ -894,10 +903,20 @@ server.registerTool(
   "create_run_result",
   {
     title: "Create Run Result",
-    description: "Record a test result for a single test within a manual test run.",
+    description:
+      "Record a test result for a single test within a manual test run. NOTE: Testmo's REST " +
+      "API has no endpoint to list a manual run's tests/discover test_id — it only appears " +
+      "in get_run_results after a result already exists (or in the Testmo UI). This tool is " +
+      "only usable once you already know test_id from another source.",
     inputSchema: {
       run_id: z.number().int().positive().describe("Test run ID"),
-      test_id: z.number().int().positive().describe("Test ID within the run"),
+      test_id: z
+        .number()
+        .int()
+        .positive()
+        .describe(
+          "Test ID within the run — not discoverable via this API before a result exists; get it from the Testmo UI or a prior result"
+        ),
       status_id: z.number().int().positive().describe("Result status ID"),
       comment: z.string().optional().describe("Comment"),
       elapsed: z.number().int().nonnegative().optional().describe("Elapsed time in seconds"),
@@ -915,7 +934,9 @@ server.registerTool(
   {
     title: "Create Run Results (Bulk)",
     description:
-      "Record test results for multiple tests within a manual test run at once (up to 100).",
+      "Record test results for multiple tests within a manual test run at once (up to 100). " +
+      "NOTE: test_id for each result isn't discoverable via this API before a result exists — " +
+      "see create_run_result.",
     inputSchema: {
       run_id: z.number().int().positive().describe("Test run ID"),
       results: z
@@ -943,10 +964,12 @@ server.registerTool(
   "update_run_result",
   {
     title: "Update Run Result",
-    description: "Update a single existing test result.",
+    description:
+      "Update a single existing test result. Get result_id from get_run_results — a result " +
+      "must already exist (created via create_run_result).",
     inputSchema: {
       run_id: z.number().int().positive().describe("Test run ID"),
-      result_id: z.number().int().positive().describe("Result ID"),
+      result_id: z.number().int().positive().describe("Result ID — from get_run_results"),
       status_id: z.number().int().positive().optional().describe("New status ID"),
       comment: z.string().optional().describe("New comment"),
       elapsed: z.number().int().nonnegative().optional().describe("Elapsed time in seconds"),

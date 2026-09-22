@@ -155,7 +155,9 @@ export class TestmoClient {
         method: "PATCH",
         body: JSON.stringify({ ids: [id], ...fields }),
       });
-      results.push(...res.result);
+      // Testmo's PATCH /folders returns id as a string, unlike every other folder
+      // endpoint (POST/GET return it as a number) — normalize for a consistent type.
+      results.push(...res.result.map((f) => ({ ...f, id: Number(f.id) })));
     }
     return { result: results };
   }
@@ -480,11 +482,22 @@ export class TestmoClient {
       state_id?: number;
       is_closed?: boolean;
       config_id?: number;
+      case_ids?: number[];
     }
   ): Promise<{ result: TestmoTestRun }> {
+    // Testmo's PATCH /runs/{id} is a full replace of case membership: a request that
+    // omits case_ids clears it rather than leaving it untouched (undocumented in the
+    // OpenAPI spec, confirmed empirically). Preserve current membership by default
+    // unless the caller explicitly passes case_ids to change it.
+    const { case_ids, ...rest } = input;
+    const body = case_ids !== undefined ? { ...rest, case_ids } : rest;
+    if (case_ids === undefined) {
+      const current = await this.getTestRun(runId);
+      (body as { case_ids?: number[] }).case_ids = current.result.case_ids;
+    }
     return this.request(`/runs/${runId}`, {
       method: "PATCH",
-      body: JSON.stringify(input),
+      body: JSON.stringify(body),
     });
   }
 
