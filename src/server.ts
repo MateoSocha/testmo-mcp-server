@@ -333,9 +333,22 @@ server.registerTool(
         .max(4)
         .optional()
         .describe("Priority (1=critical, 2=high, 3=medium, 4=low)"),
-      custom_description: z.string().optional().describe("Test case description"),
-      custom_preconditions: z.string().optional().describe("Preconditions (custom field)"),
-      custom_expected: z.string().optional().describe("Expected result (custom field)"),
+      custom_description: z
+        .string()
+        .optional()
+        .describe('Test case description. Raw HTML, e.g. "<p>...</p>" — not HTML-entity-encoded.'),
+      custom_preconditions: z
+        .string()
+        .optional()
+        .describe(
+          'Preconditions (custom field). Raw HTML, e.g. "<p>...</p>" — not HTML-entity-encoded.'
+        ),
+      custom_expected: z
+        .string()
+        .optional()
+        .describe(
+          'Expected result (custom field). Raw HTML, e.g. "<p>...</p>" — not HTML-entity-encoded.'
+        ),
       custom_steps: z
         .array(
           z.object({
@@ -380,9 +393,18 @@ server.registerTool(
         .max(4)
         .optional()
         .describe("Priority (1=critical, 2=high, 3=medium, 4=low)"),
-      custom_description: z.string().optional().describe("Test case description"),
-      custom_preconditions: z.string().optional().describe("Preconditions"),
-      custom_expected: z.string().optional().describe("Expected result"),
+      custom_description: z
+        .string()
+        .optional()
+        .describe('Test case description. Raw HTML, e.g. "<p>...</p>" — not HTML-entity-encoded.'),
+      custom_preconditions: z
+        .string()
+        .optional()
+        .describe('Preconditions. Raw HTML, e.g. "<p>...</p>" — not HTML-entity-encoded.'),
+      custom_expected: z
+        .string()
+        .optional()
+        .describe('Expected result. Raw HTML, e.g. "<p>...</p>" — not HTML-entity-encoded.'),
       custom_steps: z
         .array(
           z.object({
