@@ -303,12 +303,12 @@ Use the testmo MCP to:
 
 **Prompt:**
 ```
-Use the testmo MCP to create a test case in project [PROJECT_ID] with name "[TEST] Invalid Priority" and custom_priority set to 99. What happens?
+Use the testmo MCP to create a test case in project [PROJECT_ID] with name "[TEST] Invalid Priority" and custom_priority set to 0. What happens?
 ```
 
 **Expected:**
 - Zod validation rejects the input before any API call
-- Error message mentions priority validation (value out of range 1–4)
+- Error message says the priority must be a positive option ID
 - Tool returns error, does NOT create the case
 
 ---

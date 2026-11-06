@@ -4,6 +4,7 @@ import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js"
 import { z } from "zod";
 import { TestmoClient } from "./client.js";
 import { env } from "./env.js";
+import { customFieldsSchema, priorityOptionSchema, withCustomFields } from "./customFields.js";
 
 const { version } = createRequire(import.meta.url)("../package.json") as { version: string };
 
@@ -326,13 +327,7 @@ server.registerTool(
         .string()
         .optional()
         .describe("Expected result (plain field, per API spec)"),
-      custom_priority: z
-        .number()
-        .int()
-        .min(1)
-        .max(4)
-        .optional()
-        .describe("Priority (1=critical, 2=high, 3=medium, 4=low)"),
+      custom_priority: priorityOptionSchema,
       custom_description: z
         .string()
         .optional()
@@ -358,10 +353,11 @@ server.registerTool(
         )
         .optional()
         .describe("Test steps (custom field, structured)"),
+      custom_fields: customFieldsSchema,
     },
   },
   withErrorRecovery("create_case", async ({ project_id, ...fields }) => {
-    const result = await client.createCase(project_id, fields);
+    const result = await client.createCase(project_id, withCustomFields(fields));
     return json(result);
   })
 );
@@ -386,13 +382,7 @@ server.registerTool(
         .array(z.number().int().positive())
         .optional()
         .describe("Automation case IDs to link"),
-      custom_priority: z
-        .number()
-        .int()
-        .min(1)
-        .max(4)
-        .optional()
-        .describe("Priority (1=critical, 2=high, 3=medium, 4=low)"),
+      custom_priority: priorityOptionSchema,
       custom_description: z
         .string()
         .optional()
@@ -414,10 +404,11 @@ server.registerTool(
         )
         .optional()
         .describe("Test steps (replaces existing)"),
+      custom_fields: customFieldsSchema,
     },
   },
   withErrorRecovery("update_cases", async ({ project_id, ...fields }) => {
-    const result = await client.updateCases(project_id, fields);
+    const result = await client.updateCases(project_id, withCustomFields(fields));
     return json(result);
   })
 );
