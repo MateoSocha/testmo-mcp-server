@@ -182,11 +182,20 @@ describe.skipIf(SKIP)("testmo MCP server — integration", () => {
   // ---------------------------------------------------------------------------
 
   describe("input validation", () => {
-    it("rejects custom_priority outside 1–4", async () => {
+    it("rejects a non-positive custom_priority", async () => {
       const res = await callTool(client, "create_case", {
         project_id: projectId,
         name: "should not reach API",
-        custom_priority: 99,
+        custom_priority: 0,
+      });
+      expect(res.isError).toBe(true);
+    });
+
+    it("rejects custom_fields keys that are not custom field column names", async () => {
+      const res = await callTool(client, "create_case", {
+        project_id: projectId,
+        name: "should not reach API",
+        custom_fields: { name: "not a custom field" },
       });
       expect(res.isError).toBe(true);
     });

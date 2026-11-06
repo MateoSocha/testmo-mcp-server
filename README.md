@@ -130,11 +130,12 @@ Then in Cursor: open **Settings → MCP** and verify the server shows a green st
 | `estimate` | number | Time estimate in seconds |
 | `tags` | string[] | Tags |
 | `issues` | number[] | Linked issue IDs |
-| `custom_priority` | 1–4 | Priority: 1=critical, 2=high, 3=medium, 4=low |
+| `custom_priority` | number | Priority dropdown option ID. IDs are per instance (check `get_fields`); a default setup uses 1=critical, 2=high, 3=medium, 4=low |
 | `custom_description` | string | Test case description |
 | `custom_preconditions` | string | Preconditions |
 | `custom_expected` | string | Expected result |
 | `custom_steps` | array | Steps: `[{ text1: "step", text3: "expected" }]` |
+| `custom_fields` | object | Any other case custom field, keyed by column name (`custom_<system_name>` from `get_fields`): dropdown = option ID, multiselect = array of option IDs, text = string, checkbox = boolean, `null` clears. E.g. `{ "custom_automation_type": 23, "custom_test_categories": [28], "custom_auto_test_id": "EC-01001" }`. Named parameters win over the same key |
 
 #### `update_cases` fields
 
@@ -151,11 +152,12 @@ All fields (except `ids`) are optional and applied to **all** specified case IDs
 | `estimate` | number | Time estimate in seconds |
 | `tags` | string[] | Tags (replaces existing) |
 | `issues` | number[] | Linked issue IDs |
-| `custom_priority` | 1–4 | Priority: 1=critical, 2=high, 3=medium, 4=low |
+| `custom_priority` | number | Priority dropdown option ID. IDs are per instance (check `get_fields`); a default setup uses 1=critical, 2=high, 3=medium, 4=low |
 | `custom_description` | string | Test case description |
 | `custom_preconditions` | string | Preconditions |
 | `custom_expected` | string | Expected result |
 | `custom_steps` | array | Steps: `[{ text1: "step", text3: "expected" }]` (replaces existing) |
+| `custom_fields` | object | Any other case custom field, keyed by column name (`custom_<system_name>` from `get_fields`): dropdown = option ID, multiselect = array of option IDs, text = string, checkbox = boolean, `null` clears. E.g. `{ "custom_automation_type": 23, "custom_test_categories": [28], "custom_auto_test_id": "EC-01001" }`. Named parameters win over the same key |
 
 ### Attachments
 | Tool | Description |
